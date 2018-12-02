@@ -1,2 +1,7 @@
+# haskell compilation artifacts
 *.o
 *.hi
+
+# racket compilation artifacts
+*.dep
+*.zo

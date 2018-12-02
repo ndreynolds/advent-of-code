@@ -1,6 +1,6 @@
 -- Day 1: Chronal Calibration --
 --
--- Usage: runhaskell Day01.hs < inputs/01.txt
+-- Usage: runhaskell Day01.hs < ../inputs/01.txt
 
 import           Data.Set                       ( Set )
 import qualified Data.Set                      as Set
