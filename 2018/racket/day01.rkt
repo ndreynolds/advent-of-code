@@ -1,6 +1,6 @@
 #lang racket
 ;;
-;; Day 1: Chronal Calibration --
+;; Day 1: Chronal Calibration
 ;;
 ;; Usage: racket day01.rkt < ../inputs/01.txt
 
