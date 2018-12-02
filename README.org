@@ -1,0 +1,13 @@
+#+TITLE: Advent of Code Solutions
+
+My solutions to https://adventofcode.com/ puzzles.
+
+* 2018
+
+[[https://adventofcode.com/2018][Advent of Code 2018]]
+
+This year I'm trying the puzzles in Haskell and Racket.
+
+| Puzzle                             | Haskell  | Racket    |
+| Day 1: Chronal Calibration         | [[./2018/haskell/Day01.hs][Day01.hs]] | [[./2018/racket/day01.rkt][day01.rkt]] |
+| Day 2: Inventory Management System | [[./2018/haskell/Day02.hs][Day02.hs]] | [[./2018/racket/day02.rkt][day02.rkt]] |
