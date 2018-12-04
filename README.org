@@ -12,3 +12,4 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 1: Chronal Calibration         | [[./2018/haskell/Day01.hs][Day01.hs]] | [[./2018/racket/day01.rkt][day01.rkt]] |
 | Day 2: Inventory Management System | [[./2018/haskell/Day02.hs][Day02.hs]] | [[./2018/racket/day02.rkt][day02.rkt]] |
 | Day 3: No Matter How You Slice It  | [[./2018/haskell/Day03.hs][Day03.hs]] | TODO      |
+| Day 4: Repose Record               | [[./2018/haskell/Day04.hs][Day04.hs]] | TODO      |
