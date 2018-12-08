@@ -15,3 +15,4 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 4: Repose Record               | [[./2018/haskell/Day04.hs][Day04.hs]] | TODO      |
 | Day 5: Alchemical Reduction        | [[./2018/haskell/Day05.hs][Day05.hs]] | TODO      |
 | Day 6: Chronal Coordinates         | [[./2018/haskell/Day06.hs][Day06.hs]] | TODO      |
+| Day 7: The Sum of Its Parts        | [[./2018/haskell/Day07.hs][Day07.hs]] | TODO      |
