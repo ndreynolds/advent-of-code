@@ -2,43 +2,46 @@
 --
 -- Usage: runhaskell Day09.hs <num-players> <last-marble>
 --
--- Example: runhaskell Day09.hs 464 71730
+-- Examples:
+--
+--   runhaskell Day09.hs 464 71730
 
+import Prelude hiding (drop, length, take, splitAt)
+import Data.Sequence
 import System.Environment (getArgs)
 
 type Marble = Integer
-type Circle = [Integer]
+type Circle = Seq Integer
 type PlayerId = Integer
-type Scores = [(PlayerId, Integer)]
+type Scores = Seq (PlayerId, Integer)
 
 type Game = (Circle, Scores)
 
-rotate :: Int -> [a] -> [a]
-rotate n xs = take (length xs) $ drop n (cycle xs)
+rotate :: Int -> Seq a -> Seq a
+rotate 0 xs = xs
+rotate _ Empty = Empty
+rotate n xs = drop n xs >< take n xs
 
 twentyThird :: Game -> Marble -> Game
-twentyThird (circle, ((player, score) : otherPlayers)) m =
-  (newCircle, rotate 1 ((player, newScore) : otherPlayers))
+twentyThird (circle, (player, score) :<| otherPlayers) m =
+  (rotate 6 (hd >< tl), otherPlayers |> (player, score + m + removed))
   where
-    newScore = score + m + removed
-    newCircle = rotate 6 (hd ++ tl)
-    (hd, removed : tl) = splitAt 7 circle
+    (hd, removed :<| tl) = splitAt 7 circle
 
 putMarble :: Game -> Marble -> Game
-putMarble ([0],    scores) 1 = ([1, 0], rotate 1 scores)
-putMarble ([1, 0], scores) 2 = ([2, 0, 1], rotate 1 scores)
 putMarble (xs, scores) m
   | m `rem` 23 == 0 = twentyThird (xs, scores) m
-  | otherwise       = (m : rotate (pred $ length xs) xs, rotate 1 scores)
+  | otherwise       = (m <| rotate (pred $ length xs) xs, rotate 1 scores)
 
-part1 :: Integer -> Integer -> Integer
-part1 numPlayers lastMarble = maximum $ map snd scores
+highestScore :: Integer -> Integer -> Integer
+highestScore numPlayers lastMarble = maximum $ fmap snd scores
   where
-    (_circle, scores) = foldl putMarble ([0], players) marbles
-    players = [(i, 0) | i <- [1..numPlayers]]
-    marbles = [1..lastMarble]
+    (_circle, scores) = foldl putMarble (initial, players) marbles
+    initial = fromList [0]
+    players = fromList [(i, 0) | i <- [1..numPlayers]]
+    marbles = fromList [1..lastMarble]
 
 main :: IO ()
 main = do
   [numPlayers, lastMarble] <- fmap (map read) getArgs
-  print $ part1 numPlayers lastMarble
+  print $ highestScore numPlayers lastMarble

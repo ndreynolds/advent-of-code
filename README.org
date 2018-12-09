@@ -17,3 +17,4 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 6: Chronal Coordinates         | [[./2018/haskell/Day06.hs][Day06.hs]] | TODO      |
 | Day 7: The Sum of Its Parts        | [[./2018/haskell/Day07.hs][Day07.hs]] | TODO      |
 | Day 8: Memory Maneuver             | [[./2018/haskell/Day08.hs][Day08.hs]] | TODO      |
+| Day 9: Marble Mania                | [[./2018/haskell/Day09.hs][Day09.hs]] | TODO      |
