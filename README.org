@@ -22,3 +22,6 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 11: Chronal Charge              | [[./2018/haskell/Day11.hs][Day11.hs]] | TODO      |
 | Day 12: Subterranean Sustainability | [[./2018/haskell/Day12.hs][Day12.hs]] | TODO      |
 | Day 13: Mine Cart Madness           | [[./2018/haskell/Day13.hs][Day13.hs]] | TODO      |
+| Day 14: Chocolate Charts            | TODO     | TODO      |
+| Day 15: Beverage Bandits            | TODO     | TODO      |
+| Day 16: Mine Cart Madness           | [[./2018/haskell/Day16.hs][Day16.hs]] | TODO      |
