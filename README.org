@@ -24,4 +24,5 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 13: Mine Cart Madness           | [[./2018/haskell/Day13.hs][Day13.hs]] | TODO      |
 | Day 14: Chocolate Charts            | TODO     | TODO      |
 | Day 15: Beverage Bandits            | TODO     | TODO      |
-| Day 16: Mine Cart Madness           | [[./2018/haskell/Day16.hs][Day16.hs]] | TODO      |
+| Day 16: Chronal Classification      | [[./2018/haskell/Day16.hs][Day16.hs]] | TODO      |
+| Day 19: Go With The Flow            | [[./2018/haskell/Day19.hs][Day19.hs]] | TODO      |
