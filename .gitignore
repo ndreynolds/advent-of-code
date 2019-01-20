@@ -5,3 +5,6 @@
 # racket compilation artifacts
 *.dep
 *.zo
+
+# local notes and experiments
+notes/

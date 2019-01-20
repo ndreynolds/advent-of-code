@@ -11,25 +11,25 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Puzzle                                       | Haskell  | Racket    |
 | Day 1: Chronal Calibration                   | [[./2018/haskell/Day01.hs][Day01.hs]] | [[./2018/racket/day01.rkt][day01.rkt]] |
 | Day 2: Inventory Management System           | [[./2018/haskell/Day02.hs][Day02.hs]] | [[./2018/racket/day02.rkt][day02.rkt]] |
-| Day 3: No Matter How You Slice It            | [[./2018/haskell/Day03.hs][Day03.hs]] | TODO      |
-| Day 4: Repose Record                         | [[./2018/haskell/Day04.hs][Day04.hs]] | TODO      |
-| Day 5: Alchemical Reduction                  | [[./2018/haskell/Day05.hs][Day05.hs]] | TODO      |
-| Day 6: Chronal Coordinates                   | [[./2018/haskell/Day06.hs][Day06.hs]] | TODO      |
-| Day 7: The Sum of Its Parts                  | [[./2018/haskell/Day07.hs][Day07.hs]] | TODO      |
-| Day 8: Memory Maneuver                       | [[./2018/haskell/Day08.hs][Day08.hs]] | TODO      |
-| Day 9: Marble Mania                          | [[./2018/haskell/Day09.hs][Day09.hs]] | TODO      |
-| Day 10: The Stars Align                      | [[./2018/haskell/Day10.hs][Day10.hs]] | TODO      |
-| Day 11: Chronal Charge                       | [[./2018/haskell/Day11.hs][Day11.hs]] | TODO      |
-| Day 12: Subterranean Sustainability          | [[./2018/haskell/Day12.hs][Day12.hs]] | TODO      |
-| Day 13: Mine Cart Madness                    | [[./2018/haskell/Day13.hs][Day13.hs]] | TODO      |
-| Day 14: Chocolate Charts                     | [[./2018/haskell/Day14.hs][Day14.hs]] | TODO      |
-| Day 15: Beverage Bandits                     | [[./2018/haskell/Day15.hs][Day15.hs]] | TODO      |
-| Day 16: Chronal Classification               | [[./2018/haskell/Day16.hs][Day16.hs]] | TODO      |
-| Day 17: Reservoir Research                   | TODO     | TODO      |
-| Day 18: Settlers of The North Pole           | TODO     | TODO      |
-| Day 19: Go With The Flow                     | [[./2018/haskell/Day19.hs][Day19.hs]] | TODO      |
-| Day 20: A Regular Map                        | TODO     | TODO      |
-| Day 22: Chronal Conversion                   | TODO     | TODO      |
-| Day 23: Mode Maze                            | TODO     | TODO      |
-| Day 24: Experimental Emergency Teleportation | TODO     | TODO      |
-| Day 25: Four-Dimensional Adventure           | TODO     | TODO      |
+| Day 3: No Matter How You Slice It            | [[./2018/haskell/Day03.hs][Day03.hs]] |           |
+| Day 4: Repose Record                         | [[./2018/haskell/Day04.hs][Day04.hs]] |           |
+| Day 5: Alchemical Reduction                  | [[./2018/haskell/Day05.hs][Day05.hs]] |           |
+| Day 6: Chronal Coordinates                   | [[./2018/haskell/Day06.hs][Day06.hs]] |           |
+| Day 7: The Sum of Its Parts                  | [[./2018/haskell/Day07.hs][Day07.hs]] |           |
+| Day 8: Memory Maneuver                       | [[./2018/haskell/Day08.hs][Day08.hs]] |           |
+| Day 9: Marble Mania                          | [[./2018/haskell/Day09.hs][Day09.hs]] |           |
+| Day 10: The Stars Align                      | [[./2018/haskell/Day10.hs][Day10.hs]] |           |
+| Day 11: Chronal Charge                       | [[./2018/haskell/Day11.hs][Day11.hs]] |           |
+| Day 12: Subterranean Sustainability          | [[./2018/haskell/Day12.hs][Day12.hs]] |           |
+| Day 13: Mine Cart Madness                    | [[./2018/haskell/Day13.hs][Day13.hs]] |           |
+| Day 14: Chocolate Charts                     | [[./2018/haskell/Day14.hs][Day14.hs]] |           |
+| Day 15: Beverage Bandits                     | [[./2018/haskell/Day15.hs][Day15.hs]] |           |
+| Day 16: Chronal Classification               | [[./2018/haskell/Day16.hs][Day16.hs]] |           |
+| Day 17: Reservoir Research                   |          |           |
+| Day 18: Settlers of The North Pole           |          |           |
+| Day 19: Go With The Flow                     | [[./2018/haskell/Day19.hs][Day19.hs]] |           |
+| Day 20: A Regular Map                        |          |           |
+| Day 22: Chronal Conversion                   |          |           |
+| Day 23: Mode Maze                            |          |           |
+| Day 24: Experimental Emergency Teleportation |          |           |
+| Day 25: Four-Dimensional Adventure           | [[./2018/haskell/Day25.hs][Day25.hs]] |           |
