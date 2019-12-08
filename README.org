@@ -33,3 +33,21 @@ This year I'm trying the puzzles in Haskell and Racket.
 | Day 23: Mode Maze                            |          |           |
 | Day 24: Experimental Emergency Teleportation |          |           |
 | Day 25: Four-Dimensional Adventure           | [[./2018/haskell/Day25.hs][Day25.hs]] |           |
+
+* 2019
+
+[[https://adventofcode.com/2019][Advent of Code 2019]]
+
+Not committing to any particular language this year. I may switch it up for
+some puzzles.
+
+I've added a nix-shell shebang to each file defining all dependencies, so the
+solutions can be directly invoked with Nix installed, e.g.:
+
+#+BEGIN_SRC bash
+$ ./Day01.hs < inputs/01.txt
+#+END_SRC
+
+| Puzzle                                     | Solution                      |
+| Day 1: The Tyranny of the Rocket Equation  | [[./2019/Day01.hs][Day01.hs]] |
+| Day 2: 1202 Program Alerm                  | [[./2019/Day02.hs][Day02.hs]] |
