@@ -51,3 +51,11 @@ $ ./Day01.hs < inputs/01.txt
 | Puzzle                                     | Solution                      |
 | Day 1: The Tyranny of the Rocket Equation  | [[./2019/Day01.hs][Day01.hs]] |
 | Day 2: 1202 Program Alerm                  | [[./2019/Day02.hs][Day02.hs]] |
+
+* 2020
+
+[[./2020/notebook.jl][notebook.jl]] (Using Julia with Pluto.jl)
+
+* 2021
+
+[[./2021/notebook.jl][notebook.jl]] (Using Julia with Pluto.jl)
