@@ -54,8 +54,12 @@ $ ./Day01.hs < inputs/01.txt
 
 * 2020
 
-[[./2020/notebook.jl][notebook.jl]] (Using Julia with Pluto.jl)
+[[https://ndreynolds.github.io/advent-of-code/2020/notebook.html][notebook.jl]] (Using Julia with Pluto.jl)
 
 * 2021
 
-[[./2021/notebook.jl][notebook.jl]] (Using Julia with Pluto.jl)
+[[https://ndreynolds.github.io/advent-of-code/2021/notebook.html][notebook.jl]] (Using Julia with Pluto.jl)
+
+* 2022
+
+[[https://ndreynolds.github.io/advent-of-code/2022/notebook.html][notebook.jl]] (Using Julia with Pluto.jl)
