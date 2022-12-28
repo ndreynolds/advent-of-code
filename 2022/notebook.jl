@@ -16,6 +16,12 @@ using Base.Iterators
 # ╔═╡ f9aa330e-4a7f-4fec-87ac-c80a38bad5a3
 using MLStyle
 
+# ╔═╡ 91787e5e-09be-4658-a3ee-15ce4a03848a
+using FunctionalCollections
+
+# ╔═╡ d5b18c72-4f3c-4980-9f0b-7ae1b215938b
+using DataFrames
+
 # ╔═╡ 0b99a294-3b23-4941-922b-aedde02bbe52
 md"""
 # Advent of Code: 2022
@@ -68,6 +74,16 @@ check(input, (part, expected)) = Dict(part => test(part(input), expected))
 
 # ╔═╡ 67aa1198-045f-44e8-a020-67aacd3e2da6
 check(input, part1, part2) = check(input, part1) ∪ check(input, part2)
+
+# ╔═╡ 352d3b6f-f659-4cfb-a54d-97d3e9ef9ff7
+@active Re{r :: Regex}(x) begin
+    res = match(r, x)
+    if res !== nothing
+        Some(res)
+    else
+        nothing
+    end
+end
 
 # ╔═╡ ec27b519-53a1-4816-b8a8-a8f111e6c641
 md"""
@@ -176,17 +192,393 @@ md"""
 <https://adventofcode.com/2022/day/3>
 """
 
-# ╔═╡ bb750534-4ea5-42cf-85df-ea563dc95434
+# ╔═╡ f6f10ad1-a205-4247-92b0-049e9615883f
+in3 = data(3)
 
+# ╔═╡ 7af6b9c9-f921-4d68-a591-e8d00b2ca85f
+priority(item) = @match item begin
+  'a':'z' => Int(item) - 96
+  'A':'Z' => Int(item) - 38
+end
+
+# ╔═╡ 782cbf83-134c-4781-a3a9-044e45af41e0
+day3_1(rucksacks) =
+	sum(begin c1 = r[1:div(length(r), 2)]
+		   	  c2 = r[div(length(r), 2)+1:length(r)] 
+			priority(only(c1 ∩ c2))
+		end for r in rucksacks)
+
+# ╔═╡ 9e21d6a4-b088-4afc-bbec-a74f156b2268
+day3_2(rucksacks) =
+	sum(priority(only(a ∩ b ∩ c)) for (a, b, c) in partition(rucksacks, 3))
+
+# ╔═╡ 4bce2a82-8ec8-456b-9de2-fa8eadc8aa1c
+check(in3, (day3_1, 7727), (day3_2, 2609))
+
+# ╔═╡ 0e1fde5a-74b7-44a0-a148-40bc07d99a4c
+md"""
+## Day 4: Camp Cleanup
+
+<https://adventofcode.com/2022/day/4>
+"""
+
+# ╔═╡ 66002dbb-80bf-4fc2-92fc-0d6dd06529d6
+in4 = data(
+	4, 
+	parser = line -> 
+		partition(map(x -> parse(Int, x), match(r"(\d+)-(\d+),(\d+)-(\d+)", line)), 2)
+)
+
+# ╔═╡ 6edfe026-d046-4489-aa91-bb7d7c6f40a0
+day4_1(pairs) = 
+	sum(1 for ((a, b), (c, d)) in pairs if issubset(a:b, c:d) || issubset(c:d, a:b))
+
+# ╔═╡ aee2c54b-3558-4d55-bd8d-67ea8eaa0713
+day4_2(pairs) = 
+	sum(1 for ((a, b), (c, d)) in pairs if !isdisjoint(a:b, c:d))
+
+# ╔═╡ 29f52842-fb37-4e22-9e65-9058ca654bc8
+check(in4, (day4_1, 459), (day4_2, Nothing))
+
+# ╔═╡ 6bc2dce2-5202-499d-830b-a9685f0ac96d
+md"""
+## Day 5: Supply Stacks
+
+<https://adventofcode.com/2022/day/5>
+"""
+
+# ╔═╡ c9012459-412d-4a8a-81b6-ba83f8a12e74
+in5 = data(5)
+
+# ╔═╡ bb4f206a-ab41-4316-907c-652caeafd9a8
+struct StackMove
+	quantity::Int
+	from::Int
+	to::Int
+end
+
+# ╔═╡ 9a5e2a75-e57b-4ff3-bdd7-ab920674ce94
+function parse_stacks(input)
+	matcher = line -> 
+		map(x -> (x[1], div(x.offset - 1, 4) + 1), eachmatch(r"\[([A-Z])\]", line))
+		
+	stacks = Dict()
+	for (value, index) in mapreduce(matcher, vcat, input)
+		stacks[index] = append!(get(stacks, index, []), value)
+	end
+	stacks
+end
+
+# ╔═╡ 69673877-00ae-41ba-964a-0bd5f5da4f77
+function parse_moves(input)
+	matcher = function(line)
+		match_group = match(r"move (\d+) from (\d+) to (\d+)", line)
+		if !isnothing(match_group)
+			StackMove(
+				parse(Int, match_group[1]),
+				parse(Int, match_group[2]),
+				parse(Int, match_group[3])
+			)
+		end
+	end
+	
+	filter(!isnothing, map(matcher, input))
+end
+
+# ╔═╡ 8fdba246-f0d1-4d20-97a6-81dccccbe7e3
+function move_crates(stacks, from, to, quantity)
+	from_stack = stacks[from]
+	to_stack = stacks[to]
+
+	merge(
+		stacks,
+		Dict(
+			from => collect(drop(from_stack, quantity)),
+			to => vcat(collect(take(from_stack, quantity)), to_stack)
+		)
+	)
+end
+
+# ╔═╡ 884c1bce-b34e-4ee8-bf74-24f848936fbd
+function day5_1(input)
+	stacks = reduce(
+		function(stacks, move)
+			updated_stacks = stacks
+			for i in 1:move.quantity
+				updated_stacks = move_crates(updated_stacks, move.from, move.to, 1)
+			end
+			updated_stacks
+		end, 
+		parse_moves(input); 
+		init=parse_stacks(input)
+	)
+
+	join(first(stacks[i]) for i in 1:length(keys(stacks)))
+end
+
+# ╔═╡ bed6191b-e976-4dfb-80f6-d13a19055976
+function day5_2(input)
+	stacks = reduce(
+		function(stacks, move)
+			move_crates(stacks, move.from, move.to, move.quantity)
+		end, 
+		parse_moves(input); 
+		init=parse_stacks(input)
+	)
+
+	join(first(stacks[i]) for i in 1:length(keys(stacks)))
+end
+
+# ╔═╡ 3e576b6c-70c1-4b13-83aa-a3a7d399d590
+check(in5, (day5_1, "RNZLFZSJH"), (day5_2, "CNSFCGJSM"))
+
+# ╔═╡ b22cdad7-aaca-41eb-84b9-b2e0a5fe5eb6
+md"""
+## Day 6: Tuning Trouble
+
+<https://adventofcode.com/2022/day/6>
+"""
+
+# ╔═╡ 423eaaa6-b4ab-47ab-9a57-81207093f1a8
+in6 = data(6, reader = fname -> read(fname, String))
+
+# ╔═╡ 352e1139-811b-4cfb-9202-21c008065bfb
+start_is_marker(str, marker_size) = 
+	length(union(take(str, marker_size))) == marker_size
+
+# ╔═╡ f486f9e7-75a2-4da8-bab7-46683730b8d3
+find_first_marker(string, marker_size) = begin
+	idx = marker_size
+	while !start_is_marker(string, marker_size)
+		string = drop(string, 1)
+		idx += 1
+	end
+	idx
+end
+
+# ╔═╡ e62da71f-db6d-4e49-8bac-58ae2c48e937
+day6_1(input) = find_first_marker(input, 4)
+
+# ╔═╡ f6736f45-7fb8-46bd-8c13-300d9f760666
+day6_2(input) = find_first_marker(input, 14)
+
+# ╔═╡ 3b909b09-ad81-4908-a2e5-ba25d7ed7d60
+check(in6, (day6_1, 1640), (day6_2, 3613))
+
+# ╔═╡ 540ce384-9cf8-444a-9ac5-4160acf98911
+md"""
+## Day 7: No Space Left On Device
+
+<https://adventofcode.com/2022/day/7>
+"""
+
+# ╔═╡ 86907fdb-47ec-40af-8d9f-904ecceeedda
+begin
+	@data CommandLine begin
+		ChangeDirectory(String)
+		ListDirectory()
+		FileEntry(String, Int)
+		DirectoryEntry(String)
+	end
+	
+	@as_record ChangeDirectory
+	@as_record ListDirectory
+	@as_record FileEntry
+	@as_record DirectoryEntry
+end
+
+# ╔═╡ 64b9d1fd-e15d-4bcf-82fe-25950dfa1055
+parse_line(line) = @match line begin
+	Re{r"\$ cd (.*)"}(m) => ChangeDirectory(m[1])
+	Re{r"\$ ls"}(m)      => ListDirectory()
+	Re{r"(\d+) (.*)"}(m) => FileEntry(m[2], parse(Int, m[1]))
+    Re{r"dir (.*)"}(m)   => DirectoryEntry(m[1])
+end
+
+
+# ╔═╡ 65588be6-082b-4d19-a538-5b59e20e8aa4
+in7 = data(7, parser=parse_line)
+
+# ╔═╡ b4082bd6-ab2b-433a-92b9-5512fa1c41c1
+empty_directory = Dict(:files => Set(), :size => 0)
+
+# ╔═╡ 52e0cd46-4c68-49ce-b0a3-852e7e95c740
+change_directory(working_directory, arg) = @match arg begin
+	"/"   => "/"
+	".."  => replace(working_directory, r"(?<=\/)[^\/]+\/$" => "")
+	other => working_directory * other * "/"
+end
+
+# ╔═╡ 1beaf20b-6b9b-4391-bd9e-649de726bea6
+md"""
+Rather than a tree, the "filesystem" is represented as a flat dictionary, with directory paths as keys and directory info as values, e.g.:
+
+```
+{
+  "/": {size: 0, files: ()}
+  "/foo": {size: 100, files: ('baz.txt')}
+  "/foo/bar": {size: 0, files: ()}
+}
+```
+
+The `files` refers to the file entries in the directory itself, while `size` is their total size (non-recursive).
+"""
+
+# ╔═╡ 459fc841-2d51-43bc-9770-3701c58f54dd
+parse_filesystem(command_lines) = reduce(
+	function((cwd, fs), cmd_line)
+		current_directory = get(fs, cwd, empty_directory)
+
+		@match cmd_line begin
+			ChangeDirectory(arg) =>
+				let new_cwd = change_directory(cwd, arg)
+					
+					(
+						new_cwd,
+						merge(
+							fs, 
+							Dict(new_cwd => get(fs, new_cwd, empty_directory))
+						)
+					)
+				end
+			
+			FileEntry(name, size) =>
+				let new_files = current_directory[:files] ∪ [name],
+					new_size = current_directory[:size] + size
+					
+					(
+						cwd, 
+						merge(
+							fs, 
+							Dict(cwd => Dict(:files => new_files, :size => new_size))
+						)
+					)
+				end
+			
+			_ => (cwd, fs)
+		end
+	end,
+	command_lines;
+	init=("/", Dict())
+)
+
+# ╔═╡ c76e090f-66d0-4757-8ddf-67de4c4d84e4
+md"""
+The `directory_size` function will calculate the recursive size of a directory. That is, the total size of all files under the directory tree, and not just immediate descendants. This works by taking the sum of all `sizes` for keys starting with the
+directory name (e.g. `/` or `/foo/`).
+"""
+
+# ╔═╡ 936fa9f0-df05-4558-902a-790a38b1ce03
+directory_size(fs, search_path) =
+	sum(fs[path][:size] for path in keys(fs) if startswith(path, search_path))
+
+# ╔═╡ 84972b80-c4c0-44a1-b9d9-c9ce50f48d08
+day7_1(command_lines) = 
+	let (_, fs) = parse_filesystem(command_lines)		
+		sum(directory_size(fs, dir) for dir in keys(fs) 
+				if directory_size(fs, dir) <= 100_000)
+	end
+
+# ╔═╡ 254e5f4d-4ce8-4863-aa70-c7c0eb5c0549
+day7_2(command_lines) =
+	let (_, fs) = parse_filesystem(command_lines),
+		space_needed = 30_000_000,
+	    space_unused = 70_000_000 - directory_size(fs, "/")
+		space_to_free = space_needed - space_unused
+
+		minimum(directory_size(fs, dir) for dir in keys(fs) 
+					if directory_size(fs, dir) >= space_to_free)
+	end
+
+# ╔═╡ f3a557d8-2e27-4311-aa7b-279f74d1823f
+check(in7, (day7_1, 1367870), (day7_2, 549173))
+
+# ╔═╡ cd6636bc-90fe-48a2-bc43-8fa32320e8a6
+md"""
+## Day 8: Treetop Tree House
+
+<https://adventofcode.com/2022/day/8>
+
+We can first convert the input into a NxM matrix for easy access to columns:
+"""
+
+# ╔═╡ 61d3be91-8768-4aeb-934c-762b8f866d25
+in8 = hcat(data(8, parser=line -> [parse(Int, ch) for ch in line])...)'
+
+# ╔═╡ 44cc07f6-fd74-43b2-a48f-0f7a0f8a6027
+testin8 = hcat(data("8.test", parser=line -> [parse(Int, ch) for ch in line])...)'
+
+# ╔═╡ 68642794-8a02-487b-a66a-2df520b88860
+perspectives(matrix, (y, x); view=:outer) =
+	let row = matrix[y, :], col = matrix[:, x]
+		[
+			view === :inner ? reverse(row[1:x-1]) : row[1:x-1],
+			row[x+1:end],
+			view === :inner ? reverse(col[1:y-1]) : col[1:y-1],
+			col[y+1:end]
+		]
+	end
+
+# ╔═╡ c4d59b37-943b-4d78-a32d-b340c7e1ed46
+md"""
+A tree is visible if "all of the other trees between it and an edge of the grid are shorter than it."
+
+We can define a function that tests if a tree is directly on the perimeter, or if the trees in front of it—when viewed from west/east/north/south—are all shorter.
+"""
+
+# ╔═╡ ac5165db-6b1c-417d-bf13-f16a563486e3
+tree_is_visible(matrix, (y, x)) =
+	let tree_height = matrix[y, x],
+		shorter = t -> t < tree_height,
+		(n, m) = size(matrix),
+		on_perimeter = y == 1 || x == 1 || y == n || x == m
+
+		on_perimeter || any(p -> all(shorter, p), perspectives(matrix, (y, x)))
+	end
+
+# ╔═╡ 280c6399-766e-4d0f-b4b0-04b798091c46
+md"""
+The following visualizes the tree visibility for the entire matrix. `1`s are visible trees and `0`s are not visible. 
+"""
+
+# ╔═╡ 2eafa736-de41-4273-aa14-c6943633ac8e
+[tree_is_visible(in8, i) for i in Tuple.(CartesianIndices(in8))]
+
+# ╔═╡ b377aaee-d8b6-44eb-a3b3-90077e42fb6c
+scenic_score(matrix, (y, x)) =
+	let tree_height = matrix[y, x],
+		shorter = t -> t < tree_height
+
+		reduce(
+			*, 
+			[min(length(collect(takewhile(shorter, p))) + 1, length(p)) 
+				for p in perspectives(matrix, (y, x); view=:inner)]
+		)
+	end
+
+# ╔═╡ 86cc8843-2933-4e94-9464-0cdce10364d6
+day8_1(matrix) =
+	sum(1 for i in Tuple.(CartesianIndices(matrix)) if tree_is_visible(matrix, i))
+
+# ╔═╡ 427a9574-3429-4c65-9d0c-6c5cbcc8fcb1
+day8_2(matrix) =
+	maximum(scenic_score(matrix, i) for i in Tuple.(CartesianIndices(matrix)))
+
+# ╔═╡ 5142136c-371e-43d3-bb0d-9ddc2bde3e19
+check(in8, (day8_1, 1782), (day8_2, nothing))
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+FunctionalCollections = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
 MLStyle = "d8e11817-5142-5d16-987a-aa16d5891078"
 PGFPlotsX = "8314cec4-20b6-5062-9cdb-752b83310925"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
+DataFrames = "~1.4.4"
+FunctionalCollections = "~0.5.0"
 MLStyle = "~0.4.16"
 PGFPlotsX = "~1.5.1"
 Plots = "~1.36.6"
@@ -198,7 +590,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.3"
 manifest_format = "2.0"
-project_hash = "527fafeacbf0751315bac033ff1c2fad61031eda"
+project_hash = "f2588a532196c3f04cc4cc6d36eec8c28b51e00a"
 
 [[deps.ArgCheck]]
 git-tree-sha1 = "a3a402a35a2f7e0b87828ccabbd5ebfbebe356b4"
@@ -290,10 +682,21 @@ git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.2"
 
+[[deps.Crayons]]
+git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
+uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
+version = "4.1.1"
+
 [[deps.DataAPI]]
 git-tree-sha1 = "e08915633fcb3ea83bf9d6126292e5bc5c739922"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.13.0"
+
+[[deps.DataFrames]]
+deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Random", "Reexport", "SnoopPrecompile", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
+git-tree-sha1 = "d4f69885afa5e6149d0cab3818491565cf41446d"
+uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+version = "1.4.4"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -382,6 +785,16 @@ git-tree-sha1 = "aa31987c2ba8704e23c6c8ba8a4f769d5d7e4f91"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.10+0"
 
+[[deps.FunctionalCollections]]
+deps = ["Test"]
+git-tree-sha1 = "04cb9cfaa6ba5311973994fe3496ddec19b6292a"
+uuid = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
+version = "0.5.0"
+
+[[deps.Future]]
+deps = ["Random"]
+uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
+
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pkg", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll"]
 git-tree-sha1 = "d972031d28c8c8d9d7b41a536ad7bb0c2579caca"
@@ -449,6 +862,11 @@ deps = ["Test"]
 git-tree-sha1 = "49510dfcb407e572524ba94aeae2fced1f3feb0f"
 uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
 version = "0.1.8"
+
+[[deps.InvertedIndices]]
+git-tree-sha1 = "82aec7a3dd64f4d9584659dc0b62ef7db2ef3e19"
+uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
+version = "1.2.0"
 
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "7fd44fd4ff43fc60815f8e764c0f352b83c49151"
@@ -758,11 +1176,23 @@ git-tree-sha1 = "6a9521b955b816aa500462951aa67f3e4467248a"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 version = "1.36.6"
 
+[[deps.PooledArrays]]
+deps = ["DataAPI", "Future"]
+git-tree-sha1 = "a6062fe4063cdafe78f4a0a81cfffb89721b30e7"
+uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
+version = "1.4.2"
+
 [[deps.Preferences]]
 deps = ["TOML"]
 git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.3.0"
+
+[[deps.PrettyTables]]
+deps = ["Crayons", "Formatting", "LaTeXStrings", "Markdown", "Reexport", "StringManipulation", "Tables"]
+git-tree-sha1 = "96f6db03ab535bdb901300f88335257b0018689d"
+uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
+version = "2.2.2"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -874,6 +1304,11 @@ deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missin
 git-tree-sha1 = "d1bf48bfcc554a3761a133fe3a9bb01488e06916"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.33.21"
+
+[[deps.StringManipulation]]
+git-tree-sha1 = "46da2434b41f41ac3594ee9816ce5541c6096123"
+uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
+version = "0.3.0"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -1180,6 +1615,8 @@ version = "1.4.1+0"
 # ╠═b5bca982-ac99-4cb5-aa7d-37c876508091
 # ╠═97255b29-c5ed-4761-9e81-1a7e78953382
 # ╠═f9aa330e-4a7f-4fec-87ac-c80a38bad5a3
+# ╠═91787e5e-09be-4658-a3ee-15ce4a03848a
+# ╠═d5b18c72-4f3c-4980-9f0b-7ae1b215938b
 # ╟─2661cbe1-4dff-4d86-9991-15fea3b0545d
 # ╠═c6acdd00-cbe0-4765-af97-9ea872482237
 # ╠═86344ca7-e4b6-432b-9600-d5b9b715ae36
@@ -1188,6 +1625,7 @@ version = "1.4.1+0"
 # ╠═7194866c-d84e-4930-9b86-929b2ada03ae
 # ╠═5b0bcc21-47ad-435d-9e3d-9504e1019b57
 # ╠═67aa1198-045f-44e8-a020-67aacd3e2da6
+# ╠═352d3b6f-f659-4cfb-a54d-97d3e9ef9ff7
 # ╟─ec27b519-53a1-4816-b8a8-a8f111e6c641
 # ╠═e04313c5-2a5a-4a5c-8f6c-59df0a37b2a2
 # ╠═e7f8e486-3da3-408e-b56a-b00f0c006b32
@@ -1209,6 +1647,56 @@ version = "1.4.1+0"
 # ╠═c1a2b2ad-2ad0-4a51-acee-ce81e9e1b8ba
 # ╠═3172a98f-41e4-45ea-ade6-4f0db8cf5f30
 # ╟─9021f259-58cd-4162-9699-c11ea34f4020
-# ╠═bb750534-4ea5-42cf-85df-ea563dc95434
+# ╠═f6f10ad1-a205-4247-92b0-049e9615883f
+# ╠═7af6b9c9-f921-4d68-a591-e8d00b2ca85f
+# ╠═782cbf83-134c-4781-a3a9-044e45af41e0
+# ╠═9e21d6a4-b088-4afc-bbec-a74f156b2268
+# ╠═4bce2a82-8ec8-456b-9de2-fa8eadc8aa1c
+# ╟─0e1fde5a-74b7-44a0-a148-40bc07d99a4c
+# ╠═66002dbb-80bf-4fc2-92fc-0d6dd06529d6
+# ╠═6edfe026-d046-4489-aa91-bb7d7c6f40a0
+# ╠═aee2c54b-3558-4d55-bd8d-67ea8eaa0713
+# ╠═29f52842-fb37-4e22-9e65-9058ca654bc8
+# ╠═6bc2dce2-5202-499d-830b-a9685f0ac96d
+# ╠═c9012459-412d-4a8a-81b6-ba83f8a12e74
+# ╠═bb4f206a-ab41-4316-907c-652caeafd9a8
+# ╠═9a5e2a75-e57b-4ff3-bdd7-ab920674ce94
+# ╠═69673877-00ae-41ba-964a-0bd5f5da4f77
+# ╠═8fdba246-f0d1-4d20-97a6-81dccccbe7e3
+# ╠═884c1bce-b34e-4ee8-bf74-24f848936fbd
+# ╠═bed6191b-e976-4dfb-80f6-d13a19055976
+# ╠═3e576b6c-70c1-4b13-83aa-a3a7d399d590
+# ╠═b22cdad7-aaca-41eb-84b9-b2e0a5fe5eb6
+# ╠═423eaaa6-b4ab-47ab-9a57-81207093f1a8
+# ╠═352e1139-811b-4cfb-9202-21c008065bfb
+# ╠═f486f9e7-75a2-4da8-bab7-46683730b8d3
+# ╠═e62da71f-db6d-4e49-8bac-58ae2c48e937
+# ╠═f6736f45-7fb8-46bd-8c13-300d9f760666
+# ╠═3b909b09-ad81-4908-a2e5-ba25d7ed7d60
+# ╟─540ce384-9cf8-444a-9ac5-4160acf98911
+# ╠═86907fdb-47ec-40af-8d9f-904ecceeedda
+# ╠═64b9d1fd-e15d-4bcf-82fe-25950dfa1055
+# ╠═65588be6-082b-4d19-a538-5b59e20e8aa4
+# ╠═b4082bd6-ab2b-433a-92b9-5512fa1c41c1
+# ╠═52e0cd46-4c68-49ce-b0a3-852e7e95c740
+# ╟─1beaf20b-6b9b-4391-bd9e-649de726bea6
+# ╠═459fc841-2d51-43bc-9770-3701c58f54dd
+# ╟─c76e090f-66d0-4757-8ddf-67de4c4d84e4
+# ╠═936fa9f0-df05-4558-902a-790a38b1ce03
+# ╠═84972b80-c4c0-44a1-b9d9-c9ce50f48d08
+# ╠═254e5f4d-4ce8-4863-aa70-c7c0eb5c0549
+# ╠═f3a557d8-2e27-4311-aa7b-279f74d1823f
+# ╟─cd6636bc-90fe-48a2-bc43-8fa32320e8a6
+# ╠═61d3be91-8768-4aeb-934c-762b8f866d25
+# ╠═44cc07f6-fd74-43b2-a48f-0f7a0f8a6027
+# ╠═68642794-8a02-487b-a66a-2df520b88860
+# ╟─c4d59b37-943b-4d78-a32d-b340c7e1ed46
+# ╠═ac5165db-6b1c-417d-bf13-f16a563486e3
+# ╟─280c6399-766e-4d0f-b4b0-04b798091c46
+# ╠═2eafa736-de41-4273-aa14-c6943633ac8e
+# ╠═b377aaee-d8b6-44eb-a3b3-90077e42fb6c
+# ╠═86cc8843-2933-4e94-9464-0cdce10364d6
+# ╠═427a9574-3429-4c65-9d0c-6c5cbcc8fcb1
+# ╠═5142136c-371e-43d3-bb0d-9ddc2bde3e19
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
